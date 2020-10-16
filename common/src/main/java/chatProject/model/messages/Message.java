@@ -2,6 +2,8 @@ package chatProject.model.messages;
 
 import chatProject.model.user.UserInfo;
 
+import java.util.Objects;
+
 
 /**
  * A model for a message sent in the chat.
@@ -60,5 +62,20 @@ public class Message<T> {
                 ", sender=" + sender +
                 ", content=" + content +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Message<?> message = (Message<?>) o;
+        return id == message.id &&
+                Objects.equals(sender, message.sender) &&
+                Objects.equals(content, message.content);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, sender, content);
     }
 }
