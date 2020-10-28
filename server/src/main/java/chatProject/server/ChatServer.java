@@ -91,6 +91,7 @@ public class ChatServer<T> implements UserAlgo, ChatroomAlgo<T>, MessageAlgo<T>,
         server.socketThread = socketThread;
 
         //TODO: I should start the socket thread here
+        socketThread.run();
 
         server.checkIdleClients();
 
@@ -281,6 +282,7 @@ public class ChatServer<T> implements UserAlgo, ChatroomAlgo<T>, MessageAlgo<T>,
         final int newChatroomId = chatInstance.addChatroom(newChatroom);
 
         /* maybe I should notify clients about the new chatroom ?? */
+        notifyNewChatroom(newChatroom);
 
         return newChatroomId;
     }
@@ -317,6 +319,7 @@ public class ChatServer<T> implements UserAlgo, ChatroomAlgo<T>, MessageAlgo<T>,
     public Message<T> addMessage(int chatroomId, UserInfo user, T content) {
         Message<T> newMessage = getChatroom(chatroomId).addMessage(user, content);
 
+        notifyNewMessage(chatroomId, newMessage);
         // return new created message
         return newMessage;
     }
@@ -327,9 +330,11 @@ public class ChatServer<T> implements UserAlgo, ChatroomAlgo<T>, MessageAlgo<T>,
     @Override
     public Message<T> notifyNewMessage(int chatroomId, Message<T> newMessage) {
 
-        clientNotifiers.forEach(
-                client -> client.notifyNewMessage(chatroomId, newMessage)
-        );
+        if (clientNotifiers != null) {
+            clientNotifiers.forEach(
+                    client -> client.notifyNewMessage(chatroomId, newMessage)
+            );
+        }
         return newMessage;
     }
 
